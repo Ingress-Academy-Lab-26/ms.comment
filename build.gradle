@@ -1,0 +1,56 @@
+plugins {
+    id "java"
+    id "groovy"
+    id "org.springframework.boot" version "$springBootVersion"
+    id "io.spring.dependency-management" version "$dependencyManagementVersion"
+}
+
+group = "az.ingress"
+sourceCompatibility = "17"
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    dependencies {
+        // Spring Boot Starters
+        implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+        implementation 'org.springframework.boot:spring-boot-starter-web'
+
+        // Liquibase for database migrations
+        implementation 'org.liquibase:liquibase-core'
+
+        // Lombok (for reducing boilerplate code)
+        compileOnly 'org.projectlombok:lombok'
+        annotationProcessor 'org.projectlombok:lombok'
+
+        // PostgreSQL Driver
+        runtimeOnly 'org.postgresql:postgresql:42.6.0'
+
+        // Shedlock for distributed task scheduling
+        implementation 'net.javacrumbs.shedlock:shedlock-spring:5.13.0'
+        implementation 'net.javacrumbs.shedlock:shedlock-provider-jdbc-template:5.13.0'
+
+        // Swagger (for API documentation)
+        implementation "org.springdoc:springdoc-openapi-ui:$openApiVersion"
+
+        // Testing Dependencies
+        testImplementation 'org.springframework.boot:spring-boot-starter-test'
+        testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+        testImplementation "org.apache.groovy:groovy:$groovyVersion"
+        testImplementation "org.spockframework:spock-spring:$spockSpringVersion"
+        testImplementation "io.github.benas:random-beans:$randomBeansVersion"
+    }
+
+}
+
+test {
+    useJUnitPlatform()
+}
