@@ -1,27 +1,40 @@
 package az.ingress.dao.entity;
 
+
 import az.ingress.model.enums.CommentStatus;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-//* u duzelt (wildcard olmasin)
-import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.util.Objects;
+import org.hibernate.annotations.Where;
+
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+import static javax.persistence.GenerationType.IDENTITY;
+
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @Builder
+@EqualsAndHashCode(of = "id")
 @Entity
 @Table(name = "comments")
 @FieldNameConstants
+@Where(clause = "status <> 'DELETED'")
 public class CommentEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
     private Long userId;
@@ -32,25 +45,4 @@ public class CommentEntity {
 
     @Enumerated(EnumType.STRING)
     private CommentStatus status;
-
-
-    @CreationTimestamp
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
-
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        CommentEntity commentEntity = (CommentEntity) o;
-        return Objects.equals(id, commentEntity.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
 }

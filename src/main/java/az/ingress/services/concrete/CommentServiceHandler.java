@@ -1,6 +1,7 @@
 package az.ingress.services.concrete;
 
-import az.ingress.aop.annotation.Log;
+import az.ingress.annotation.Log;
+import az.ingress.client.ProductClient;
 import az.ingress.dao.entity.CommentEntity;
 import az.ingress.dao.repository.CommentRepository;
 import az.ingress.exception.NotFoundException;
@@ -15,28 +16,36 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import static az.ingress.exception.ErrorMessage.COMMENT_NOT_FOUND;
+import static az.ingress.exception.ErrorMessage.PRODUCT_NOT_FOUND;
 import static az.ingress.mapper.CommentMapper.COMMENT_MAPPER;
 import static az.ingress.model.enums.CommentStatus.*;
-import static az.ingress.model.enums.ExceptionConstants.COMMENT_NOT_FOUND;
+
 
 @Service
 @RequiredArgsConstructor
 @Log
 public class CommentServiceHandler implements CommentService {
+     private final ProductClient productClient;
 
     private final CommentRepository commentRepository;
 
     @Override
     public void createComment(CreateOrUpdateCommentRequest request) {
-        var commentEntity = COMMENT_MAPPER.buildCommentEntity(request);
-        commentRepository.save(commentEntity);
-    }
+        if (productClient.getProductId(request.getProductId()) != null) {
+            var commentEntity = COMMENT_MAPPER.buildCommentEntity(request);
+            commentRepository.save(commentEntity);
+        }
+        else {throw new NotFoundException(PRODUCT_NOT_FOUND.getMessage());
 
+        }
+    }
     @Override
     public CommentResponse getCommentById(Long id) {
         var comment = fetchCommentExist(id);
         return COMMENT_MAPPER.buildCommentResponse(comment);
     }
+
     @Override
     public PageableResponse<CommentResponse> getAllComments(CommentCriteria CommentCriteria,
                                                             PageCriteria pageCriteria) {
@@ -49,11 +58,9 @@ public class CommentServiceHandler implements CommentService {
     @Override
     public void updateComment(Long id, CreateOrUpdateCommentRequest request) {
         var comment = fetchCommentExist(id);
-        comment.setContent(request.getContent());
-        comment.setUserId(request.getUserId());
-        comment.setProductId(request.getProductId());
-        comment.setStatus(PENDING);
+        COMMENT_MAPPER.updateComment(comment, request);
         commentRepository.save(comment);
+
     }
 
     @Override
@@ -65,6 +72,6 @@ public class CommentServiceHandler implements CommentService {
 
     private CommentEntity fetchCommentExist(Long id) {
         return commentRepository.findById(id).orElseThrow(() ->
-                new NotFoundException(COMMENT_NOT_FOUND.getCode(), COMMENT_NOT_FOUND.getMessage()));
+                new NotFoundException(COMMENT_NOT_FOUND.getMessage()));
     }
 }

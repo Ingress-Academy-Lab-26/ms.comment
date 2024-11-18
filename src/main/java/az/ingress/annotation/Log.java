@@ -1,4 +1,4 @@
-package az.ingress.aop.annotation;
+package az.ingress.annotation;
 
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
@@ -10,5 +10,5 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Inherited
 @Target(TYPE)
 @Retention(RUNTIME)
-public @interface Log{
+public @interface Log {
 }

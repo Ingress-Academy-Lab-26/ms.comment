@@ -26,6 +26,7 @@ public class CommentSpecification implements Specification<CommentEntity> {
                 .addNullSafety(commentCriteria.getContent(),
                         content -> cb.like(cb.lower(root.get(Fields.content)), applyLikePattern(content.toLowerCase())))
                 .addNullSafety(commentCriteria.getProductId(),
+
                         productId -> cb.equal(root.get(Fields.productId), productId))
                 .addNullSafety(commentCriteria.getUserId(),
                         userId -> cb.equal(root.get(Fields.userId), userId))
